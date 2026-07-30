@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Check, CreditCard, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils/cn';
-import { LIMITS } from '@/lib/constants';
+import { LIMITS, PLAN } from '@/lib/constants';
 import { MAX_REROLLS_PER_DAY } from '@/lib/utils/anon-handles';
 import { useProfile } from '@/lib/hooks/useProfile';
 import { Button } from '@/components/ui/Button';
@@ -150,10 +150,14 @@ export default function PricingPage() {
 
           <Kicker as="p">Press Pass</Kicker>
           <h2 id="plan-pro" className="mt-2 font-display text-5xl leading-none">
-            &#8377;149
+            {/* Driven by PLAN so the displayed price cannot drift from the
+                amount /api/checkout actually charges. */}
+            {PLAN.amountDisplay}
             <span className="ml-1 font-mono text-sm font-bold text-ink-muted">/ month</span>
           </h2>
-          <p className="kicker mt-1.5 text-ink-faint">Roughly $3.99 outside India</p>
+          <p className="kicker mt-1.5 text-ink-faint">
+            Roughly {PLAN.amountUsdDisplay} outside India
+          </p>
 
           <p className="mt-3 font-body text-ink-soft">
             For people who file often and post the cards.

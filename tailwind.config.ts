@@ -52,52 +52,27 @@ const config: Config = {
           ink: '#1A1D00',
         },
 
-        /* ---- Thermal ramp: drives every score-derived accent ---- */
-        thermal: {
-          ice: '#0047FF',
-          luke: '#00968F',
-          warm: '#C98A00',
-          hot: '#FF6B00',
-          spicy: '#FF1F4B',
-          nuclear: '#D10000',
-        },
+        /*
+         * The thermal ramp is deliberately NOT a Tailwind palette. Score
+         * colours are applied through the `--tier` variable (set by the
+         * [data-tier] blocks in globals.css) and read in TS from TIERS[].hex.
+         * A third copy here would be a silent drift risk with nothing
+         * consuming it.
+         */
 
         /* ---- Semantic ---- */
         danger: '#D10000',
         success: '#00795C',
 
         /*
-         * Legacy aliases. The previous palette used tokens that were never
-         * defined (bg-surface, text-accent-gold, border-borderPurple...), so
-         * those panels rendered with no background at all. These aliases are
-         * intentional insurance during the redesign: any straggler class still
-         * resolves to a real colour instead of transparent.
+         * The legacy aliases (midnight.*, surface.*, accent.*, borderPurple,
+         * textMuted, tea.*, figma.*) that briefly lived here during the
+         * redesign have been removed. They existed so any straggler class from
+         * the old palette would still resolve to a real colour instead of
+         * transparent. Every component has since been rebuilt and none of them
+         * are referenced, so keeping them would only let a stale or misspelled
+         * class silently compile again.
          */
-        midnight: {
-          DEFAULT: rgb('--paper'),
-          surface: rgb('--paper-sunk'),
-          card: rgb('--paper-raised'),
-          hover: rgb('--paper-edge'),
-          border: rgb('--rule'),
-        },
-        surface: {
-          DEFAULT: rgb('--paper-sunk'),
-          card: rgb('--paper-raised'),
-          hover: rgb('--paper-edge'),
-        },
-        accent: {
-          gold: '#C98A00',
-          purple: '#0047FF',
-        },
-        borderPurple: rgb('--rule'),
-        textMuted: rgb('--ink-muted'),
-        tea: {
-          amber: '#FF6B00',
-          dark: '#FF1F4B',
-          cold: '#0047FF',
-          hot: '#FF6B00',
-          nuclear: '#D10000',
-        },
       },
 
       fontFamily: {
@@ -134,37 +109,18 @@ const config: Config = {
 
       borderWidth: {
         3: '3px',
-        6: '6px',
       },
 
       boxShadow: {
         /* Hard offset "printed block" shadows, no soft blur */
         stamp: '3px 3px 0 0 rgb(var(--ink))',
         'stamp-lg': '6px 6px 0 0 rgb(var(--ink))',
-        'stamp-marker': '4px 4px 0 0 #C9E000',
         press: '1px 1px 0 0 rgb(var(--ink))',
-        lift: '0 12px 28px -12px rgb(var(--ink) / 0.45)',
-      },
-
-      spacing: {
-        gutter: '1.375rem',
       },
 
       maxWidth: {
         column: '68ch',
         broadsheet: '84rem',
-      },
-
-      backgroundImage: {
-        'halftone': 'radial-gradient(rgb(var(--ink) / 0.5) 1px, transparent 1px)',
-        'rule-dashed':
-          'repeating-linear-gradient(90deg, rgb(var(--ink)) 0 6px, transparent 6px 12px)',
-        'marker-sweep':
-          'linear-gradient(104deg, transparent 0.5%, #E8FF3D 2%, #E8FF3D 97%, transparent 99%)',
-      },
-
-      backgroundSize: {
-        halftone: '4px 4px',
       },
 
       keyframes: {
@@ -174,31 +130,20 @@ const config: Config = {
           '55%': { opacity: '1', transform: 'scale(0.94) rotate(-3deg)' },
           '100%': { opacity: '1', transform: 'scale(1) rotate(-5deg)' },
         },
-        /* Highlighter drawn left to right */
-        'marker-in': {
-          '0%': { backgroundSize: '0% 100%' },
-          '100%': { backgroundSize: '100% 100%' },
-        },
-        ticker: {
-          '0%': { transform: 'translateX(0%)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
-        /* Kettle steam curl */
+        /* Kettle steam curl on the masthead wordmark */
         steam: {
           '0%': { opacity: '0', transform: 'translateY(2px) scaleX(0.8)' },
           '40%': { opacity: '0.85' },
           '100%': { opacity: '0', transform: 'translateY(-9px) scaleX(1.25)' },
         },
+        /* Newsprint grain drift; consumed by body::before in globals.css */
         'grain-shift': {
           '0%, 100%': { transform: 'translate(0, 0)' },
           '25%': { transform: 'translate(-1%, 1%)' },
           '50%': { transform: 'translate(1%, -1%)' },
           '75%': { transform: 'translate(1%, 1%)' },
         },
-        'rise-in': {
-          '0%': { opacity: '0', transform: 'translateY(10px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
+        /* Skeleton placeholder pulse */
         'pulse-rule': {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.35' },
@@ -207,11 +152,8 @@ const config: Config = {
 
       animation: {
         'stamp-in': 'stamp-in 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both',
-        'marker-in': 'marker-in 0.5s ease-out both',
-        ticker: 'ticker 32s linear infinite',
         steam: 'steam 2.4s ease-out infinite',
         'grain-shift': 'grain-shift 8s steps(4) infinite',
-        'rise-in': 'rise-in 0.4s ease-out both',
         'pulse-rule': 'pulse-rule 1.4s ease-in-out infinite',
       },
 

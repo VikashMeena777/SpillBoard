@@ -151,12 +151,6 @@
     height: 5px;
   }
 
-  /* Column divider for multi-column feed layouts */
-  .col-rule {
-    background-image: linear-gradient(to bottom, rgb(var(--ink) / 0.28), transparent);
-    width: 1px;
-  }
-
   /* ---------- Type treatments ---------- */
 
   /* Metadata / kicker: mono, caps, wide-tracked */

@@ -44,16 +44,9 @@ export function createClient() {
   });
 }
 
-/** Resolve the signed-in user, or null. Never throws. */
-export async function getCurrentUser() {
-  if (!isSupabaseConfigured()) return null;
-  try {
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    return user;
-  } catch {
-    return null;
-  }
-}
+/*
+ * A `getCurrentUser()` helper lived here but nothing imported it: there is no
+ * session-gated route yet, and /api/auth/otp only needs `createClient` plus
+ * `isSupabaseConfigured`. Add it back alongside the first real consumer rather
+ * than keeping an untested auth helper on the shelf.
+ */

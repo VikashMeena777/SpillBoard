@@ -17,10 +17,12 @@ jobs:
           SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
           SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
 
+          # No hardcoded fallback: the previous version embedded a real
+          # project ref in the repo, which leaks the project identifier and
+          # pings someone else's project when secrets are absent.
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "Warning: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY secret is not configured in GitHub repository secrets."
-            echo "Using default project health check URL fallback..."
-            SUPABASE_URL="https://vxkulzvgkbamloadycqv.supabase.co"
+            echo "Skipping: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY are not set in repository secrets."
+            exit 0
           fi
 
           echo "Pinging Supabase REST API endpoint at: ${SUPABASE_URL}/rest/v1/"

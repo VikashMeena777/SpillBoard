@@ -10,8 +10,14 @@ import { Anton, Archivo, Lora, IBM_Plex_Mono } from 'next/font/google';
  * consumed by tailwind.config.ts.
  */
 
+/*
+ * These four are intentionally module-private: `fontVariables` below is the only
+ * thing the app consumes (in the root layout). Exporting each family
+ * individually would imply per-component use that does not exist.
+ */
+
 /** Condensed tabloid headline scream. */
-export const fontDisplay = Anton({
+const fontDisplay = Anton({
   subsets: ['latin'],
   weight: '400',
   display: 'swap',
@@ -19,7 +25,7 @@ export const fontDisplay = Anton({
 });
 
 /** Grotesque for UI, buttons, and navigation. */
-export const fontUI = Archivo({
+const fontUI = Archivo({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-ui',
@@ -33,7 +39,7 @@ export const fontUI = Archivo({
  * for it, which is a hard build failure. Lora is the closest supported
  * equivalent: same editorial weight, real italics for the verdict quotes.
  */
-export const fontBody = Lora({
+const fontBody = Lora({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-body',
@@ -41,7 +47,7 @@ export const fontBody = Lora({
 });
 
 /** Receipt / metadata mono. */
-export const fontMono = IBM_Plex_Mono({
+const fontMono = IBM_Plex_Mono({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   display: 'swap',
