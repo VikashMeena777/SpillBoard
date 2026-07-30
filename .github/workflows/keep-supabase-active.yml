@@ -1,0 +1,37 @@
+name: Keep Supabase Active
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every 3 days (Supabase free projects pause after 7 days of inactivity)
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  ping-supabase:
+    name: Ping Supabase Database
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Keep-Alive Ping to Supabase REST API
+        run: |
+          SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+          SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
+
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Warning: NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY secret is not configured in GitHub repository secrets."
+            echo "Using default project health check URL fallback..."
+            SUPABASE_URL="https://vxkulzvgkbamloadycqv.supabase.co"
+          fi
+
+          echo "Pinging Supabase REST API endpoint at: ${SUPABASE_URL}/rest/v1/"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "apikey: ${SUPABASE_ANON_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            "${SUPABASE_URL}/rest/v1/confessions?select=id&limit=1" || true)
+
+          echo "Supabase HTTP Response Code: $RESPONSE"
+          if [ "$RESPONSE" -ge 200 ] && [ "$RESPONSE" -lt 500 ]; then
+            echo "✅ Supabase project successfully pinged! Inactivity timer reset."
+          else
+            echo "⚠️ Notice: Supabase returned HTTP status $RESPONSE. Project ping sent."
+          fi

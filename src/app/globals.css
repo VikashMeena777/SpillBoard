@@ -1,0 +1,357 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * SpillBoard — Acid Tabloid
+ * ------------------------------------------------------------------
+ * Two editions. Surface + ink tokens are RGB triplets so Tailwind's
+ * `rgb(var(--x) / <alpha-value>)` opacity modifiers keep working.
+ * The thermal ramp is deliberately NOT themed: score colour carries
+ * product meaning and must read the same in both editions.
+ */
+
+@layer base {
+  :root {
+    /* Paper edition (default): cheap warm newsprint */
+    --paper: 240 237 228;
+    --paper-sunk: 228 224 212;
+    --paper-raised: 250 248 242;
+    --paper-edge: 214 209 195;
+
+    --ink: 18 17 16;
+    --ink-soft: 52 50 47;
+    --ink-muted: 92 88 82;
+    --ink-faint: 140 135 126;
+
+    --rule: 18 17 16;
+
+    --grain-opacity: 0.055;
+    --stock-tint: 24 18 6;
+  }
+
+  .dark {
+    /* Night edition: late-run press, ink-heavy */
+    --paper: 14 14 15;
+    --paper-sunk: 9 9 10;
+    --paper-raised: 24 24 26;
+    --paper-edge: 38 38 41;
+
+    --ink: 244 241 233;
+    --ink-soft: 208 204 195;
+    --ink-muted: 158 154 146;
+    --ink-faint: 110 107 101;
+
+    --rule: 74 73 70;
+
+    --grain-opacity: 0.07;
+    --stock-tint: 255 240 200;
+  }
+
+  * {
+    border-color: rgb(var(--rule));
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: rgb(var(--paper));
+    color: rgb(var(--ink));
+    font-family: var(--font-body), Georgia, serif;
+    overflow-x: hidden;
+    /* Uneven stock: faint ink wash so the paper is never flat white */
+    background-image:
+      radial-gradient(ellipse 80% 55% at 12% 0%, rgb(var(--stock-tint) / 0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 92% 22%, rgb(var(--stock-tint) / 0.05) 0%, transparent 62%);
+    background-attachment: fixed;
+  }
+
+  /* Newsprint grain: fixed overlay, pointer-transparent */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    z-index: 60;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain-shift 8s steps(4) infinite;
+  }
+
+  /* Visible, high-contrast focus ring on the marker colour */
+  :focus-visible {
+    outline: 3px solid rgb(var(--ink));
+    outline-offset: 2px;
+  }
+
+  .dark :focus-visible {
+    outline-color: #e8ff3d;
+  }
+
+  ::selection {
+    background: #e8ff3d;
+    color: #1a1d00;
+  }
+
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--paper-sunk));
+    border-left: 1px solid rgb(var(--rule));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--ink) / 0.55);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--ink));
+  }
+
+  /* Headlines are set tight and condensed by default */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), Impact, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 0.9;
+  }
+}
+
+@layer components {
+  /* ---------- Structure ---------- */
+
+  /* The core surface: a printed block with a hard rule and offset shadow */
+  .paper-block {
+    background-color: rgb(var(--paper-raised));
+    border: 2px solid rgb(var(--ink));
+    box-shadow: 3px 3px 0 0 rgb(var(--ink));
+    transition:
+      transform 0.16s cubic-bezier(0.2, 1.4, 0.4, 1),
+      box-shadow 0.16s cubic-bezier(0.2, 1.4, 0.4, 1);
+  }
+
+  /* Interactive blocks lift toward the reader, shadow grows */
+  .paper-block-interactive:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 rgb(var(--ink));
+  }
+
+  .paper-block-interactive:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 0 rgb(var(--ink));
+  }
+
+  /* Masthead double rule, the classic newspaper divider */
+  .rule-double {
+    border-top: 3px solid rgb(var(--ink));
+    border-bottom: 1px solid rgb(var(--ink));
+    height: 5px;
+  }
+
+  /* Column divider for multi-column feed layouts */
+  .col-rule {
+    background-image: linear-gradient(to bottom, rgb(var(--ink) / 0.28), transparent);
+    width: 1px;
+  }
+
+  /* ---------- Type treatments ---------- */
+
+  /* Metadata / kicker: mono, caps, wide-tracked */
+  .kicker {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+
+  /* Highlighter marker sweep behind inline text */
+  .marker-text {
+    background-image: linear-gradient(
+      104deg,
+      transparent 0.5%,
+      #e8ff3d 2%,
+      #e8ff3d 97%,
+      transparent 99%
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    color: #1a1d00;
+    padding: 0.05em 0.3em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  /* Drop cap for the lead confession body */
+  .drop-cap::first-letter {
+    float: left;
+    font-family: var(--font-display), Impact, sans-serif;
+    font-size: 3.2em;
+    line-height: 0.74;
+    padding: 0.06em 0.09em 0 0;
+    color: rgb(var(--ink));
+  }
+
+  /* ---------- Thermal system ---------- */
+
+  /*
+   * Score-derived accent, applied via one data attribute instead of a
+   * switch statement per component. `--tier` feeds border, text, and fills.
+   */
+  [data-tier='ice'] {
+    --tier: 0 71 255;
+  }
+  [data-tier='luke'] {
+    --tier: 0 150 143;
+  }
+  [data-tier='warm'] {
+    --tier: 201 138 0;
+  }
+  [data-tier='hot'] {
+    --tier: 255 107 0;
+  }
+  [data-tier='spicy'] {
+    --tier: 255 31 75;
+  }
+  [data-tier='nuclear'] {
+    --tier: 209 0 0;
+  }
+
+  .tier-text {
+    color: rgb(var(--tier, var(--ink)));
+  }
+  .tier-bg {
+    background-color: rgb(var(--tier, var(--ink)));
+  }
+  .tier-border {
+    border-color: rgb(var(--tier, var(--ink)));
+  }
+  /* Thick spine down the left edge of a card, colour-coded by heat */
+  .tier-spine {
+    border-left-width: 10px;
+    border-left-style: solid;
+    border-left-color: rgb(var(--tier, var(--ink)));
+  }
+  .tier-wash {
+    background-color: rgb(var(--tier, var(--ink)) / 0.09);
+  }
+
+  /* ---------- Devices ---------- */
+
+  /* Rotated ink stamp used for the score badge */
+  .ink-stamp {
+    border: 3px solid currentColor;
+    transform: rotate(-5deg);
+    font-family: var(--font-display), Impact, sans-serif;
+    letter-spacing: 0.01em;
+  }
+
+  /* Thermal receipt strip for AI verdicts: torn bottom edge */
+  .receipt {
+    background-color: rgb(var(--paper-raised));
+    border: 1px dashed rgb(var(--ink) / 0.45);
+    position: relative;
+  }
+
+  .receipt::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 6px;
+    background-image: linear-gradient(
+        45deg,
+        transparent 33.33%,
+        rgb(var(--paper-raised)) 33.33% 66.66%,
+        transparent 66.66%
+      ),
+      linear-gradient(
+        -45deg,
+        transparent 33.33%,
+        rgb(var(--paper-raised)) 33.33% 66.66%,
+        transparent 66.66%
+      );
+    background-size: 8px 12px;
+  }
+
+  /* Halftone dot field, for hero and empty-state texture */
+  .halftone-field {
+    background-image: radial-gradient(rgb(var(--ink) / 0.42) 1px, transparent 1px);
+    background-size: 4px 4px;
+  }
+
+  /* Cheap-print CMYK misregistration on hero type */
+  .misprint {
+    text-shadow:
+      1.5px 0 0 rgb(255 31 75 / 0.42),
+      -1.5px 0 0 rgb(0 71 255 / 0.32);
+  }
+}
+
+@layer utilities {
+  /* Screen-reader-only, standard clip pattern */
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/*
+ * Motion accessibility: the old build animated a marquee, a boiling kettle
+ * and confetti with no guard at all. Anything decorative stops here.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  body::before {
+    animation: none !important;
+  }
+
+  .paper-block-interactive:hover {
+    transform: none;
+  }
+}
+
+/* Print: strip the theatre, keep the words */
+@media print {
+  body::before,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .paper-block {
+    box-shadow: none;
+    border-width: 1px;
+  }
+}
